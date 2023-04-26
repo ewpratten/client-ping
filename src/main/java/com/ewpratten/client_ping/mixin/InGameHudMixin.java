@@ -22,7 +22,6 @@ public class InGameHudMixin {
 
 		// Get as a regular string
 		String messageString = message.getString();
-		Globals.LOGGER.info("Message: " + messageString);
 
 		// If there aren't enough parts, don't do anything
 		if (messageString.split(" ").length < 2) {
@@ -32,7 +31,6 @@ public class InGameHudMixin {
 		// Try to parse the username from the first chunk
 		String username = messageString.split(" ")[0];
 		username = username.substring(1, username.length() - 1);
-		Globals.LOGGER.info("Username: " + username);
 
 		// The remainder of the message might be a ping message
 		String chatBody = messageString.split(" ", 2)[1];

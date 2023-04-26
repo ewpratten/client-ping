@@ -22,7 +22,7 @@ public record Ping(String owner, Vec3d position, long timestamp) {
 
 		// Check if the message is a ping
 		if (!serialized.startsWith("Ping at {") || !serialized.endsWith("}")) {
-			Globals.LOGGER.info("BAD STRING FORMAT: " + serialized);
+			Globals.LOGGER.debug("BAD STRING FORMAT: " + serialized);
 			return null;
 		}
 
@@ -31,7 +31,6 @@ public record Ping(String owner, Vec3d position, long timestamp) {
 
 		// Split into parts
 		String[] parts = serialized.split(", ");
-		Globals.LOGGER.info(Arrays.toString(parts));
 
 		// Check if there are enough parts
 		if (parts.length != 3) {
