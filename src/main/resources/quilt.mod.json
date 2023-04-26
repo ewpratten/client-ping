@@ -19,8 +19,9 @@
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
-			"init": "com.ewpratten.client_ping.ClientPingMod",
-			"modmenu": "com.ewpratten.client_ping.ClientPingModMenuApiImpl"
+			"init": "com.ewpratten.client_ping.ModEntrypoint",
+			"client": "com.ewpratten.client_ping.ClientModEntrypoint",
+			"modmenu": "com.ewpratten.client_ping.ModMenuApiImpl"
 		},
 		"depends": [
 			{
