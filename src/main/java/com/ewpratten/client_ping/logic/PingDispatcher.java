@@ -11,10 +11,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBind;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.world.RaycastContext.FluidHandling;
+import net.minecraft.world.RaycastContext.ShapeType;
 
 public class PingDispatcher {
 
@@ -22,7 +23,7 @@ public class PingDispatcher {
 	private PingRegistry registry = PingRegistry.getInstance();
 	private KeyBind keyBind;
 	private long lastPingTimestamp = 0;
-	private final long PING_COOLDOWN = 5000;
+	private final long PING_COOLDOWN = 1000;
 
 	// Create a ping dispatcher and connect to the ping key bind
 	public PingDispatcher() {
@@ -51,23 +52,23 @@ public class PingDispatcher {
 
 	private void createPing() {
 		// Find the block coordinate of the player's crosshair raycast
-		HitResult hitResult = this.client.crosshairTarget;
-		Vec3d hitPosition;
+		Vec3d cameraPosition = this.client.player.getCameraPosVec(1.0F);
+		Vec3d cameraRay1000Blocks = this.client.player.getRotationVec(1.0F).multiply(1000.0D).add(cameraPosition);
+		BlockHitResult hitResult = this.client.world.raycast(new RaycastContext(cameraPosition, cameraRay1000Blocks,
+				ShapeType.COLLIDER, FluidHandling.NONE, this.client.player));
+		Vec3d hitPosition = hitResult.getPos();
 
-		switch (hitResult.getType()) {
-			case BLOCK:
-				BlockPos blockPosition = ((BlockHitResult) hitResult).getBlockPos();
-				hitPosition = new Vec3d(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
-				break;
-			case ENTITY:
-
-				hitPosition = ((EntityHitResult) hitResult).getPos();
-				break;
-			default:
-				// If we hit nothing, ping nothing
-				Globals.LOGGER.info("Player tried to ping nothing");
-				return;
+		// If there is no hit, skip
+		if (hitResult.getType() == HitResult.Type.MISS) {
+			return;
 		}
+
+		// Floor the hit position
+		hitPosition = new Vec3d(Math.floor(hitPosition.getX()), Math.floor(hitPosition.getY()),
+				Math.floor(hitPosition.getZ()));
+
+		// The hit position is always too high
+		hitPosition = new Vec3d(hitPosition.getX(), hitPosition.getY() - 1, hitPosition.getZ());
 
 		// Create a ping object
 		this.lastPingTimestamp = System.currentTimeMillis();
