@@ -80,6 +80,10 @@ public class PingRegistry {
 
 			// Get the waypoint set for the current world
 			WaypointWorld currentWorld = manager.getCurrentWorld();
+			if (currentWorld == null) {
+				Globals.LOGGER.error("Failed to get current world");
+				return;
+			}
 			WaypointSet waypoints = currentWorld.getCurrentSet();
 
 			// Get a list of all active pings
