@@ -12,6 +12,17 @@ repositories {
 		url = "https://maven.terraformersmc.com/releases"
 		name = "TerraformersMC"
 	}
+	exclusiveContent {
+        forRepository {
+            maven {
+                name = "Modrinth"
+                url = "https://api.modrinth.com/maven"
+            }
+        }
+        filter {
+            includeGroup "maven.modrinth"
+        }
+    }
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -21,12 +32,14 @@ dependencies {
 	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
 	modImplementation libs.quilt.loader
 
-	// QSL is not a complete API; You will need Quilted Fabric API to fill in the gaps.
-	// Quilted Fabric API will automatically pull in the correct QSL version.
+	// QSL / Fabric compat API
 	modImplementation libs.quilted.fabric.api
 
 	// ModMenu support
 	modApi "com.terraformersmc:modmenu:6.2.1"
+
+	// Xaero's Minimap is used for waypoint rendering
+    modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_1.19.4"
 }
 
 processResources {

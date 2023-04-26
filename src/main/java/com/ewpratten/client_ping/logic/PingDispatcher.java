@@ -1,4 +1,4 @@
-package com.ewpratten.client_ping.ping_logic;
+package com.ewpratten.client_ping.logic;
 
 import org.lwjgl.glfw.GLFW;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
@@ -37,7 +37,7 @@ public class PingDispatcher {
 
 	// Registers an event handler that does the local ping creation logic every time
 	// the ping key is pressed
-	public void register() {
+	public void registerCallbacks() {
 		// Perform checks every tick
 		Globals.LOGGER.info("Registering ping creation event handler");
 		ClientTickEvents.END.register(client -> {
@@ -71,7 +71,7 @@ public class PingDispatcher {
 
 		// Create a ping object
 		this.lastPingTimestamp = System.currentTimeMillis();
-		Ping ping = new Ping(this.client.player.getUuid(), hitPosition, lastPingTimestamp);
+		Ping ping = new Ping(this.client.player.getName().getString(), hitPosition, lastPingTimestamp);
 
 		// Broadcast the ping
 		Globals.LOGGER.info("Player pinged at " + hitPosition.toString());

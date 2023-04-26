@@ -1,6 +1,6 @@
 package com.ewpratten.client_ping;
 
-import com.ewpratten.client_ping.ping_logic.PingDispatcher;
+import com.ewpratten.client_ping.logic.PingDispatcher;
 
 import net.fabricmc.api.ClientModInitializer;
 
@@ -15,8 +15,6 @@ public class ClientModEntrypoint implements ClientModInitializer {
 
 		// Create and register the ping dispatcher
 		this.pingDispatcher = new PingDispatcher();
-		this.pingDispatcher.register();
-
+		this.pingDispatcher.registerCallbacks();
 	}
-
 }

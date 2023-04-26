@@ -1,4 +1,4 @@
-package com.ewpratten.client_ping.ping_logic;
+package com.ewpratten.client_ping.logic;
 
 import java.util.UUID;
 
@@ -6,15 +6,16 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.util.math.Vec3d;
 
-public record Ping(UUID owner, Vec3d position, long timestamp) {
+public record Ping(String owner, Vec3d position, long timestamp) {
 
 	// Serialize a ping in chat-ready format
 	public String serializeForChat() {
-		return String.format("Ping at {%.2f, %.2f, %.2f}", this.position.getX(), this.position.getY(), this.position.getZ());
+		return String.format("Ping at {%.2f, %.2f, %.2f}", this.position.getX(), this.position.getY(),
+				this.position.getZ());
 	}
 
 	// Deserialize a ping from a string and owner
-	public @Nullable Ping deserialize(String serialized, UUID owner) {
+	public @Nullable Ping deserialize(String serialized, String owner) {
 		String[] parts = serialized.split(" ");
 		if (parts.length != 5) {
 			return null;
