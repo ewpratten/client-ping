@@ -1,5 +1,6 @@
 package com.ewpratten.client_ping.mixin;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatMessageTag;
 import net.minecraft.text.Text;
@@ -32,6 +33,13 @@ public class InGameHudMixin {
 		String username = messageString.split(" ")[0];
 		username = username.substring(1, username.length() - 1);
 
+		// Ignore messages from the current player
+		MinecraftClient mc = MinecraftClient.getInstance();
+		if (username.equals(mc.player.getName().getString())) {
+			Globals.LOGGER.info("Dropping ping message from self");
+			return;
+		}
+
 		// The remainder of the message might be a ping message
 		String chatBody = messageString.split(" ", 2)[1];
 		Ping parseResult = Ping.deserialize(chatBody, username);
@@ -44,7 +52,6 @@ public class InGameHudMixin {
 
 		// Store in the registry
 		PingRegistry.getInstance().register(parseResult);
-
 	}
 
 }
