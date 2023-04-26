@@ -28,12 +28,13 @@ public class PingRegistry {
 
 		// Perform pre-flight cleanup jobs
 		long now = System.currentTimeMillis();
+		ArrayList<Ping> markedForRemoval = new ArrayList<Ping>();
 		for (Ping p : this.pings) {
 
 			// If the user already has a ping, remove the old one
 			if (p.owner().equals(ping.owner())) {
 				Globals.LOGGER.debug("Removing old ping from " + p.owner());
-				this.pings.remove(p);
+				markedForRemoval.add(p);
 			}
 
 			// Instead of running a separate prune job, we can just ignore old pings in
@@ -41,9 +42,10 @@ public class PingRegistry {
 			// lifetime here
 			if (now - p.timestamp() > MAX_PING_LIFETIME) {
 				Globals.LOGGER.debug("Removing old ping from " + p.owner());
-				this.pings.remove(p);
+				markedForRemoval.add(p);
 			}
 		}
+		this.pings.removeAll(markedForRemoval);
 
 		// Add the new ping
 		this.pings.add(ping);
