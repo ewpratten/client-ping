@@ -9,7 +9,6 @@ import com.mojang.blaze3d.platform.InputUtil;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBind;
-import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
@@ -77,7 +76,9 @@ public class PingDispatcher {
 		// Broadcast the ping
 		Globals.LOGGER.info("Player pinged at " + hitPosition.toString());
 		String chatMessage = ping.serializeForChat();
-		this.client.player.sendMessage(Text.literal(chatMessage), false);
+
+		// Create and send a chat message to the server
+		this.client.getNetworkHandler().sendChatMessage(chatMessage);
 
 		// Inform the registry of the new ping
 		this.registry.register(ping);
