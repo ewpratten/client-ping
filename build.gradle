@@ -8,10 +8,10 @@ version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 repositories {
-	maven {
-		url = "https://maven.terraformersmc.com/releases"
-		name = "TerraformersMC"
-	}
+	// maven {
+	// 	url = "https://maven.terraformersmc.com/releases"
+	// 	name = "TerraformersMC"
+	// }
 	exclusiveContent {
         forRepository {
             maven {
@@ -36,7 +36,7 @@ dependencies {
 	modImplementation libs.quilted.fabric.api
 
 	// ModMenu support
-	modApi "com.terraformersmc:modmenu:6.2.1"
+	// modApi "com.terraformersmc:modmenu:6.2.1"
 
 	// Xaero's Minimap is used for waypoint rendering
     modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_1.19.4"

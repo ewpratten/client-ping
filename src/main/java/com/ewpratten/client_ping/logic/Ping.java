@@ -1,8 +1,11 @@
 package com.ewpratten.client_ping.logic;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
+
+import com.ewpratten.client_ping.Globals;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -15,18 +18,32 @@ public record Ping(String owner, Vec3d position, long timestamp) {
 	}
 
 	// Deserialize a ping from a string and owner
-	public @Nullable Ping deserialize(String serialized, String owner) {
-		String[] parts = serialized.split(" ");
-		if (parts.length != 5) {
+	public static @Nullable Ping deserialize(String serialized, String owner) {
+
+		// Check if the message is a ping
+		if (!serialized.startsWith("Ping at {") || !serialized.endsWith("}")) {
+			Globals.LOGGER.info("BAD STRING FORMAT: " + serialized);
 			return null;
 		}
-		String[] coords = parts[3].split(",");
-		if (coords.length != 3) {
+
+		// Remove the prefix and suffix
+		serialized = serialized.substring(9, serialized.length() - 1);
+
+		// Split into parts
+		String[] parts = serialized.split(", ");
+		Globals.LOGGER.info(Arrays.toString(parts));
+
+		// Check if there are enough parts
+		if (parts.length != 3) {
 			return null;
 		}
-		double x = Double.parseDouble(coords[0]);
-		double y = Double.parseDouble(coords[1]);
-		double z = Double.parseDouble(coords[2]);
+
+		// Parse the parts
+		double x = Double.parseDouble(parts[0]);
+		double y = Double.parseDouble(parts[1]);
+		double z = Double.parseDouble(parts[2]);
+
+		// Create the ping
 		return new Ping(owner, new Vec3d(x, y, z), System.currentTimeMillis());
 	}
 }

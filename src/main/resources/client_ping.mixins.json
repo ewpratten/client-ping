@@ -4,6 +4,7 @@
 	"package": "com.ewpratten.client_ping.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+    "InGameHudMixin"
   ],
 	"client": [
 	],

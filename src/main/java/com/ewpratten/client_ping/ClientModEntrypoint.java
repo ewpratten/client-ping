@@ -1,8 +1,11 @@
 package com.ewpratten.client_ping;
 
+import org.quiltmc.qsl.lifecycle.api.client.event.ClientLifecycleEvents;
+
 import com.ewpratten.client_ping.logic.PingDispatcher;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.network.message.MessageType;
 
 public class ClientModEntrypoint implements ClientModInitializer {
 
@@ -16,5 +19,6 @@ public class ClientModEntrypoint implements ClientModInitializer {
 		// Create and register the ping dispatcher
 		this.pingDispatcher = new PingDispatcher();
 		this.pingDispatcher.registerCallbacks();
+
 	}
 }

@@ -11,7 +11,6 @@
 				"Evan Pratten": "Owner"
 			},
 			"contact": {
-				"homepage": "https://ewpratten.com/minecraft/mods/client-ping",
 				"issues": "https://github.com/ewpratten/client-ping/issues",
 				"sources": "https://github.com/ewpratten/client-ping"
 			},
@@ -20,8 +19,7 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"init": "com.ewpratten.client_ping.ModEntrypoint",
-			"client": "com.ewpratten.client_ping.ClientModEntrypoint",
-			"modmenu": "com.ewpratten.client_ping.ModMenuApiImpl"
+			"client": "com.ewpratten.client_ping.ClientModEntrypoint"
 		},
 		"depends": [
 			{
