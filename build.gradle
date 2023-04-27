@@ -39,7 +39,7 @@ dependencies {
 	// modApi "com.terraformersmc:modmenu:6.2.1"
 
 	// Xaero's Minimap is used for waypoint rendering
-    modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_1.19.4"
+    modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_${libs.versions.minecraft.get()}"
 }
 
 processResources {
