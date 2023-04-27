@@ -1,29 +1,24 @@
-# Quilt Template Mod
+# Client Ping
 
-The official Quilt template mod. You can use it as a template for your own mods!
+**Client Ping** is a client-side Minecraft mod that implements "pinging" (marking an object as a point of interest) on vanilla servers.
 
 ## Usage
 
-In order to use this mod as a template:
+By default, **Client Ping** uses the <kbd>z</kbd> key to ping the block you are looking at (within 1000m). You can change this key bind in the Minecraft controls menu.
 
-1. Create a new repository from this template with `Use this template`
-2. Clone the recently-created repo on your PC
-3. Make the necessary changes in order to make it yours:
-    - Update `gradle.properties` in order to use your Maven group and mod ID
-        - If you don't know which Maven group to use, and you are planning to host the mod's source code on GitHub, use `io.github.<Your_Username_Here>`
-    - Update `quilt.mod.json` in order to reflect your mod's metadata
-        - If you are planning to include (jar-in-jar) a mod, don't forget to declare its dependency on it!
-        - The icon provided here is a placeholder one. If you aren't able to replace it yet, you can delete it and remove the "icon" property
-    - Create a LICENSE file for this mod! If you don't know which license to use, check out [here](https://choosealicense.com/).
-        - If you use `LICENSE.md`, don't forget to update the buildscript in order to use that file name!
-        - In `quilt.mod.json`, don't forget to put the license's [SPDX identifier](https://spdx.org/licenses/) under the `"license"` property in `"metadata"`.
-        - The GPLv3 and AGPLv3 are not valid mod licenses, so you can use almost any license except for those.
-    - Update the Java sub-directory structure so it reflects your Maven group
-    - If the dependencies on `gradle/libs.versions.toml` isn't up-to-date, feel free to update them! The [linked utility](https://lambdaurora.dev/tools/import_quilt.html) should help you in this easy and quick process.
-4. The mod is now ready to be worked on!
+Pings will be visible for a short time to yourself and all players on the same server with this mod installed.
 
-## License
+- Pings disappear after 10 seconds
+- You may ping once per second
 
-This template on the QuiltMC GitHub is licensed under the [Creative Common Zero v1.0 license](./LICENSE-TEMPLATE.md).
+## How it works
 
-Mods created with this template are not automatically licensed under the CC0, and are not required to give any kind of credit back to QuiltMC for this template.
+**Client Ping** works by sending pings through vanilla server chat. This way, even players without the mod installed can see the coordinate you have pinged. No more copying from the <kbd>F3</kbd> menu!
+
+Chat messages come in the following format:
+
+```text
+<Player> Ping at {x.xx, y.yy, z.zz}
+```
+
+When a client receives and parses one of these ping messages, a temporary waypoint is injected into [Xaero's Minimap](https://modrinth.com/mod/xaeros-minimap). This allows the ping mark to be rendered on screen according to your existing waypoint rendering settings. It'll also be marked on your map if you have [Xaero's World Map](https://modrinth.com/mod/xaeros-world-map) installed.

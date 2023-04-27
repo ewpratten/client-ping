@@ -1,14 +1,13 @@
 {
-	"required": true,
-	"minVersion": "0.8",
-	"package": "com.ewpratten.client_ping.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"mixins": [
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.ewpratten.client_ping.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
     "InGameHudMixin"
   ],
-	"client": [
-	],
-	"injectors": {
-		"defaultRequire": 1
-	}
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }

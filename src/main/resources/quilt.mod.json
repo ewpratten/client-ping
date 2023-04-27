@@ -8,7 +8,7 @@
 			"name": "Client Ping",
 			"description": "Purely client-side point-of-interest marking",
 			"contributors": {
-				"Evan Pratten": "Owner"
+				"Evan Pratten": "Author"
 			},
 			"contact": {
 				"issues": "https://github.com/ewpratten/client-ping/issues",
@@ -33,6 +33,10 @@
 			{
 				"id": "minecraft",
 				"versions": ">=1.19.4"
+			},
+			{
+				"id": "xaerominimap",
+				"versions": ">=23.4.0"
 			}
 		]
 	},
