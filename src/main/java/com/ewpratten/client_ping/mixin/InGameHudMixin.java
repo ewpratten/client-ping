@@ -33,17 +33,22 @@ public class InGameHudMixin {
 		String username = messageString.split(" ")[0];
 		username = username.substring(1, username.length() - 1);
 
-		// Ignore messages from the current player
-		MinecraftClient mc = MinecraftClient.getInstance();
-		if (username.equals(mc.player.getName().getString())) {
-			Globals.LOGGER.info("Dropping ping message from self");
-			return;
-		}
-
 		// The remainder of the message might be a ping message
 		String chatBody = messageString.split(" ", 2)[1];
 		Ping parseResult = Ping.deserialize(chatBody, username);
 		if (parseResult == null) {
+			return;
+		}
+
+		// If the config says to hide ping messages, cancel the event
+		if (!Globals.CONFIG.showPingsInChat()) {
+			info.cancel();
+		}
+
+		// Ignore messages from the current player
+		MinecraftClient mc = MinecraftClient.getInstance();
+		if (username.equals(mc.player.getName().getString())) {
+			Globals.LOGGER.info("Dropping ping message from self");
 			return;
 		}
 
@@ -52,6 +57,7 @@ public class InGameHudMixin {
 
 		// Store in the registry
 		PingRegistry.getInstance().register(parseResult);
+
 	}
 
 }

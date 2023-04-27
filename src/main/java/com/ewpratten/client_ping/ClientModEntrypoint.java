@@ -1,11 +1,9 @@
 package com.ewpratten.client_ping;
 
-import org.quiltmc.qsl.lifecycle.api.client.event.ClientLifecycleEvents;
+import org.quiltmc.loader.api.ModContainer;
+import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 
 import com.ewpratten.client_ping.logic.PingDispatcher;
-
-import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.network.message.MessageType;
 
 public class ClientModEntrypoint implements ClientModInitializer {
 
@@ -13,7 +11,7 @@ public class ClientModEntrypoint implements ClientModInitializer {
 	private PingDispatcher pingDispatcher;
 
 	@Override
-	public void onInitializeClient() {
+	public void onInitializeClient(ModContainer mod) {
 		Globals.LOGGER.info("Running client-side initialization");
 
 		// Create and register the ping dispatcher
@@ -21,4 +19,5 @@ public class ClientModEntrypoint implements ClientModInitializer {
 		this.pingDispatcher.registerCallbacks();
 
 	}
+
 }

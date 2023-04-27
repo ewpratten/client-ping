@@ -18,7 +18,6 @@ public class PingRegistry {
 
 	// A list of all pings currently active
 	private ArrayList<Ping> pings = new ArrayList<Ping>();
-	private static final long MAX_PING_LIFETIME = 10000;
 
 	// Refresh job
 	private TickBasedScheduledTask refreshTask;
@@ -35,6 +34,10 @@ public class PingRegistry {
 			instance = new PingRegistry();
 		}
 		return instance;
+	}
+
+	private long getMaxPingLifetime(){
+		return Globals.CONFIG.pingDisplayTime() * 1000;
 	}
 
 	// Tracks a new ping in the registry
@@ -54,7 +57,7 @@ public class PingRegistry {
 			// Instead of running a separate prune job, we can just ignore old pings in
 			// other parts of the codebase, and quickly drop everything passed the max
 			// lifetime here
-			if (now - p.timestamp() > MAX_PING_LIFETIME) {
+			if (now - p.timestamp() > this.getMaxPingLifetime()) {
 				Globals.LOGGER.debug("Removing old ping from " + p.owner());
 				markedForRemoval.add(p);
 			}
@@ -88,7 +91,7 @@ public class PingRegistry {
 
 			// Get a list of all active pings
 			long now = System.currentTimeMillis();
-			ArrayList<Ping> activePings = this.pings.stream().filter(p -> now - p.timestamp() < MAX_PING_LIFETIME)
+			ArrayList<Ping> activePings = this.pings.stream().filter(p -> now - p.timestamp() < this.getMaxPingLifetime())
 					.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
 			// Remove any stale pings

@@ -8,10 +8,10 @@ version = "${project.version}+${libs.versions.minecraft.get()}"
 group = project.maven_group
 
 repositories {
-	// maven {
-	// 	url = "https://maven.terraformersmc.com/releases"
-	// 	name = "TerraformersMC"
-	// }
+	maven {
+		url = "https://maven.terraformersmc.com/releases"
+		name = "TerraformersMC"
+	}
 	exclusiveContent {
         forRepository {
             maven {
@@ -23,6 +23,10 @@ repositories {
             includeGroup "maven.modrinth"
         }
     }
+	maven {
+		url = 'https://maven.wispforest.io'
+		name = 'WispForest'
+	}
 }
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
@@ -35,11 +39,16 @@ dependencies {
 	// QSL / Fabric compat API
 	modImplementation libs.quilted.fabric.api
 
-	// ModMenu support
-	// modApi "com.terraformersmc:modmenu:6.2.1"
+	// ModMenu support at runtime
+	modRuntimeOnly "com.terraformersmc:modmenu:6.2.1"
 
 	// Xaero's Minimap is used for waypoint rendering
     modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_${libs.versions.minecraft.get()}"
+
+	// OWO Lib
+	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+    annotationProcessor "io.wispforest:owo-lib:${project.owo_version}"
+    include "io.wispforest:owo-sentinel:${project.owo_version}"
 }
 
 processResources {

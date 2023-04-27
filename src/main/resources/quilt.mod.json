@@ -8,9 +8,11 @@
 			"name": "Client Ping",
 			"description": "Purely client-side point-of-interest marking",
 			"contributors": {
-				"Evan Pratten": "Author"
+				"Evan Pratten": "Author",
+				"Demilurii": "Icon Artist"
 			},
 			"contact": {
+				"website": "https://modrinth.com/mod/client-ping",
 				"issues": "https://github.com/ewpratten/client-ping/issues",
 				"sources": "https://github.com/ewpratten/client-ping"
 			},
@@ -19,7 +21,7 @@
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
 			"init": "com.ewpratten.client_ping.ModEntrypoint",
-			"client": "com.ewpratten.client_ping.ClientModEntrypoint"
+			"client_init": "com.ewpratten.client_ping.ClientModEntrypoint"
 		},
 		"depends": [
 			{
@@ -37,6 +39,10 @@
 			{
 				"id": "xaerominimap",
 				"versions": ">=23.4.0"
+			},
+			{
+				"id": "owo",
+				"versions": ">=0.10.3"
 			}
 		]
 	},
