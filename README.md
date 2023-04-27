@@ -8,7 +8,7 @@ By default, **Client Ping** uses the <kbd>z</kbd> key to ping the block you are 
 
 Pings will be visible for a short time to yourself and all players on the same server with this mod installed.
 
-- Pings disappear after 10 seconds
+- Pings disappear after 10 seconds (configurable through [Mod Menu](https://modrinth.com/mod/modmenu))
 - You may ping once per second
 
 ## How it works
