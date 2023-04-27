@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFW;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 
 import com.ewpratten.client_ping.Globals;
+import com.ewpratten.client_ping.util.DimensionPosition;
 import com.mojang.blaze3d.platform.InputUtil;
 
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -12,6 +13,7 @@ import net.minecraft.client.option.KeyBind;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.RaycastContext.FluidHandling;
 import net.minecraft.world.RaycastContext.ShapeType;
@@ -55,23 +57,22 @@ public class PingDispatcher {
 		Vec3d cameraRay1000Blocks = this.client.player.getRotationVec(1.0F).multiply(1000.0D).add(cameraPosition);
 		BlockHitResult hitResult = this.client.world.raycast(new RaycastContext(cameraPosition, cameraRay1000Blocks,
 				ShapeType.COLLIDER, FluidHandling.NONE, this.client.player));
-		Vec3d hitPosition = hitResult.getPos();
+		Vec3i hitPosition = new Vec3i((int) Math.floor(hitResult.getPos().x), (int) Math.floor(hitResult.getPos().y),
+				(int) Math.floor(hitResult.getPos().z));
 
 		// If there is no hit, skip
 		if (hitResult.getType() == HitResult.Type.MISS) {
 			return;
 		}
 
-		// Floor the hit position
-		hitPosition = new Vec3d(Math.floor(hitPosition.getX()), Math.floor(hitPosition.getY()),
-				Math.floor(hitPosition.getZ()));
-
 		// The hit position is always too high
-		hitPosition = new Vec3d(hitPosition.getX(), hitPosition.getY() - 1, hitPosition.getZ());
+		hitPosition = new Vec3i(hitPosition.getX(), hitPosition.getY() - 1, hitPosition.getZ());
 
 		// Create a ping object
 		this.lastPingTimestamp = System.currentTimeMillis();
-		Ping ping = new Ping(this.client.player.getName().getString(), hitPosition, lastPingTimestamp);
+		String currentDimension = this.client.world.getRegistryKey().getValue().toString();
+		Ping ping = new Ping(this.client.player.getName().getString(),
+				new DimensionPosition(currentDimension, hitPosition), lastPingTimestamp);
 
 		// Broadcast the ping
 		Globals.LOGGER.info("Player pinged at " + hitPosition.toString());

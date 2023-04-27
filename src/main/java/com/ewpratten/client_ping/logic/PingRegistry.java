@@ -1,15 +1,10 @@
 package com.ewpratten.client_ping.logic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.ewpratten.client_ping.Globals;
-import com.ewpratten.client_ping.util.TickBasedScheduledTask;
 
-import xaero.common.XaeroMinimapSession;
-import xaero.common.minimap.waypoints.WaypointSet;
-import xaero.common.minimap.waypoints.WaypointWorld;
-import xaero.common.minimap.waypoints.WaypointsManager;
+import net.minecraft.client.MinecraftClient;
 
 public class PingRegistry {
 
@@ -19,14 +14,7 @@ public class PingRegistry {
 	// A list of all pings currently active
 	private ArrayList<Ping> pings = new ArrayList<Ping>();
 
-	// Refresh job
-	private TickBasedScheduledTask refreshTask;
-
 	private PingRegistry() {
-		// Spawn a job that calls refreshWaypoints every second
-		this.refreshTask = new TickBasedScheduledTask(() -> {
-			this.refreshWaypoints();
-		}, 1000);
 	}
 
 	public static PingRegistry getInstance() {
@@ -36,11 +24,11 @@ public class PingRegistry {
 		return instance;
 	}
 
-	private long getMaxPingLifetime(){
-		return Globals.CONFIG.pingDisplayTime() * 1000;
-	}
-
-	// Tracks a new ping in the registry
+	/**
+	 * Tracks a new ping with the registry
+	 *
+	 * @param ping Ping to register
+	 */
 	public synchronized void register(Ping ping) {
 
 		// Perform pre-flight cleanup jobs
@@ -57,7 +45,7 @@ public class PingRegistry {
 			// Instead of running a separate prune job, we can just ignore old pings in
 			// other parts of the codebase, and quickly drop everything passed the max
 			// lifetime here
-			if (now - p.timestamp() > this.getMaxPingLifetime()) {
+			if (now - p.timestamp() > Globals.getMaxPingLifetime()) {
 				Globals.LOGGER.debug("Removing old ping from " + p.owner());
 				markedForRemoval.add(p);
 			}
@@ -67,50 +55,43 @@ public class PingRegistry {
 		// Track the new ping
 		this.pings.add(ping);
 
-		// Refresh the waypoint list
-		this.refreshWaypoints();
+		// Force a re-sync with Xaero's Minimap
+		XaeroBridge.sync();
 	}
 
-	private void refreshWaypoints() {
-		// Get the waypoint manager
-		XaeroMinimapSession currentSession = XaeroMinimapSession.getCurrentSession();
-		if (currentSession != null) {
-			WaypointsManager manager = currentSession.getWaypointsManager();
-			if (manager == null) {
-				Globals.LOGGER.error("Failed to get waypoint manager");
-				return;
-			}
+	/**
+	 * Gets a list of all currently alive pings in a dimension
+	 *
+	 * @param dimension Dimension to search in
+	 * @return All pings that were created in the last {@link #getMaxPingLifetime()}
+	 *         milliseconds
+	 */
+	public ArrayList<Ping> getActivePingsForDimension(String dimension) {
+		long now = System.currentTimeMillis();
+		return this.pings.stream()
+				// Only get recent pings
+				.filter(p -> now - p.timestamp() < Globals.getMaxPingLifetime())
+				// Only get pings in the correct dimension
+				.filter(p -> p.position().dimension().equals(dimension))
+				// Transform the stream into an arraylist
+				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+	}
 
-			// Get the waypoint set for the current world
-			WaypointWorld currentWorld = manager.getCurrentWorld();
-			if (currentWorld == null) {
-				Globals.LOGGER.error("Failed to get current world");
-				return;
-			}
-			WaypointSet waypoints = currentWorld.getCurrentSet();
-
-			// Get a list of all active pings
-			long now = System.currentTimeMillis();
-			ArrayList<Ping> activePings = this.pings.stream().filter(p -> now - p.timestamp() < this.getMaxPingLifetime())
-					.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
-
-			// Remove any stale pings
-			waypoints.getList().removeIf(waypoint -> (waypoint instanceof PingWaypoint)
-					&& !activePings.contains(((PingWaypoint) waypoint).inner));
-
-			// Add any new pings
-			for (Ping ping : activePings) {
-				// If the waypoint already exists, skip it
-				if (waypoints.getList().stream().anyMatch(waypoint -> (waypoint instanceof PingWaypoint)
-						&& ((PingWaypoint) waypoint).inner.equals(ping))) {
-					continue;
-				}
-
-				// Add the waypoint
-				PingWaypoint pw = new PingWaypoint(ping);
-				waypoints.getList().add(pw);
-			}
+	/**
+	 * Gets a list of all currently alive pings in the current dimension
+	 *
+	 * @return All pings that were created in the last {@link #getMaxPingLifetime()}
+	 */
+	public ArrayList<Ping> getActivePingsInCurrentDimension() {
+		// Request the current dimension name from the Minecraft client
+		MinecraftClient client = MinecraftClient.getInstance();
+		if (client.world == null) {
+			return new ArrayList<Ping>();
 		}
+		String currentDimension = client.world.getRegistryKey().getValue().toString();
+
+		// Perform ping lookup
+		return this.getActivePingsForDimension(currentDimension);
 	}
 
 }

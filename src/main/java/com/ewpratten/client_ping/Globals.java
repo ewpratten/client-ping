@@ -11,4 +11,12 @@ public class Globals {
 	// Global config data
 	public static final ClientPingConfig CONFIG = ClientPingConfig.createAndLoad();
 
+	/**
+	 * Gets the maximum number of milliseconds a ping may stay on screen for before being pruned
+	 * @return Maximum lifetime in milliseconds
+	 */
+	public static long getMaxPingLifetime() {
+		return Globals.CONFIG.pingDisplayTime() * 1000;
+	}
+
 }

@@ -1,48 +1,34 @@
 package com.ewpratten.client_ping.logic;
 
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.ewpratten.client_ping.Globals;
+import com.ewpratten.client_ping.util.DimensionPosition;
 
-import net.minecraft.util.math.Vec3d;
+public record Ping(String owner, DimensionPosition position, long timestamp) {
 
-public record Ping(String owner, Vec3d position, long timestamp) {
+	private static final Pattern DESERIALIZATION_PATTERN = Pattern.compile("Ping at \\{(.+)\\}",
+			Pattern.CASE_INSENSITIVE);
 
 	// Serialize a ping in chat-ready format
 	public String serializeForChat() {
-		return String.format("Ping at {%.2f, %.2f, %.2f}", this.position.getX(), this.position.getY(),
-				this.position.getZ());
+		return String.format("Ping at {%s}", this.position.toString());
 	}
 
 	// Deserialize a ping from a string and owner
 	public static @Nullable Ping deserialize(String serialized, String owner) {
-
-		// Check if the message is a ping
-		if (!serialized.startsWith("Ping at {") || !serialized.endsWith("}")) {
-			Globals.LOGGER.debug("BAD STRING FORMAT: " + serialized);
+		var matcher = DESERIALIZATION_PATTERN.matcher(serialized);
+		if (matcher.matches()) {
+			try {
+				return new Ping(owner, DimensionPosition.fromString(matcher.group(1)), System.currentTimeMillis());
+			} catch (IllegalArgumentException e) {
+				Globals.LOGGER.error("Failed to deserialize ping", e);
+				return null;
+			}
+		} else {
 			return null;
 		}
-
-		// Remove the prefix and suffix
-		serialized = serialized.substring(9, serialized.length() - 1);
-
-		// Split into parts
-		String[] parts = serialized.split(", ");
-
-		// Check if there are enough parts
-		if (parts.length != 3) {
-			return null;
-		}
-
-		// Parse the parts
-		double x = Double.parseDouble(parts[0]);
-		double y = Double.parseDouble(parts[1]);
-		double z = Double.parseDouble(parts[2]);
-
-		// Create the ping
-		return new Ping(owner, new Vec3d(x, y, z), System.currentTimeMillis());
 	}
 }
