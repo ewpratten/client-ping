@@ -29,8 +29,6 @@ repositories {
 	}
 }
 
-// All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
-// See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
 dependencies {
 
 	// JUint
@@ -72,25 +70,58 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-	// Still required by IDEs such as Eclipse and Visual Studio Code
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
 
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task if it is present.
-	// If you remove this line, sources will not be generated.
 	withSourcesJar()
-
-	// If this mod is going to be a library, then it should also generate Javadocs in order to aid with development.
-	// Uncomment this line to generate them.
 	// withJavadocJar()
 }
 
-// If you plan to use a different file for the license, don't forget to change the file name here!
+task buildRustLinux_x86(type: Exec) {
+	commandLine "cross", "build", "--target", "x86_64-unknown-linux-gnu", "--release"
+
+	doLast {
+		copy {
+			from "target/x86_64-unknown-linux-gnu/release/lib${project.native_library_name}.so"
+			into "build/resources/main/native/linux/x86_64"
+		}
+	}
+}
+
+task buildRustWindows_x86(type: Exec) {
+	commandLine "cross", "build", "--target", "x86_64-pc-windows-gnu", "--release"
+
+	doLast {
+		copy {
+			from "target/x86_64-pc-windows-gnu/release/${project.native_library_name}.dll"
+			into "build/resources/main/native/windows/x86_64"
+		}
+	}
+}
+
+task buildRust(type: Jar) {
+	dependsOn buildRustLinux_x86
+	dependsOn buildRustWindows_x86
+}
+
+// The JAR needs to contain the built native library files
 jar {
+	dependsOn buildRust
+
+	// Copy the license to the JAR
 	from('LICENSE') {
 		rename { "${it}_${archivesBaseName}" }
 	}
+
+	// // Copy the native library files to the JAR
+	// into ("native/linux/x86_64") {
+	// 	from fileTree(dir: "target/x86_64-unknown-linux-gnu/release", include: "*.so")
+	// }
+	// into ("native/windows/x86_64") {
+	// 	from fileTree(dir: "target/x86_64-pc-windows-gnu/release", include: "*.dll")
+	// }
 }
+
 
 // Configure the maven publication
 publishing {
@@ -99,13 +130,7 @@ publishing {
 			from components.java
 		}
 	}
-
-	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	repositories {
-		// Add repositories to publish to here.
-		// Notice: This block does NOT have the same function as the block in the top level.
-		// The repositories here will be used for publishing your artifact, not for
-		// retrieving dependencies.
 	}
 }
 

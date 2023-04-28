@@ -1,0 +1,12 @@
+[package]
+name = "client_ping_native"
+version = "0.0.0"
+authors = ["Evan Pratten <evan@ewpratten.com>"]
+edition = "2021"
+
+[dependencies]
+jni = "0.21.1"
+
+[lib]
+crate_type = ["cdylib"]
+path = "src/main/rust/lib.rs"

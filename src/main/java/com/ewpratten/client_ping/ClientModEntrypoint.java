@@ -25,6 +25,8 @@ public class ClientModEntrypoint implements ClientModInitializer {
 			XaeroBridge.sync();
 		}, 1000);
 
+		Globals.LOGGER.info(Native.helloWorld());
+
 	}
 
 }
