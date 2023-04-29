@@ -223,6 +223,16 @@ public class Native {
 
 	}
 
+	// Test function
 	public static native String helloWorld();
+
+	/**
+	 * Handles an incoming chat message. If the message contains a ping, the
+	 * registry will store it, and the result of this function will be `true`.
+	 *
+	 * @param message Chat message to parse
+	 * @return True of the message contained a ping, false otherwise
+	 */
+	public static native boolean handleInboundChatMessage(String message);
 
 }
