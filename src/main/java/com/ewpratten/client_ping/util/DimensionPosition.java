@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3i;
 // Represents a position in a specific dimension
 public record DimensionPosition(String dimension, Vec3i position) {
 
-	private static final Pattern DESERIALIZATION_PATTERN = Pattern.compile("(.+):\\((\\d+), (\\d+), (\\d+)\\)",
+	private static final Pattern DESERIALIZATION_PATTERN = Pattern.compile("(.+):\\(([\\d\\-]+), ([\\d\\-]+), ([\\d\\-]+)\\)",
 			Pattern.CASE_INSENSITIVE);
 
 	public int getX() {
