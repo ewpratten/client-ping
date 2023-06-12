@@ -46,10 +46,10 @@ dependencies {
 	modImplementation libs.quilted.fabric.api
 
 	// ModMenu support at runtime
-	modRuntimeOnly "com.terraformersmc:modmenu:6.2.1"
+	modRuntimeOnly "com.terraformersmc:modmenu:7.0.1"
 
 	// Xaero's Minimap is used for waypoint rendering
-    modImplementation "maven.modrinth:xaeros-minimap:23.4.0_Fabric_${libs.versions.minecraft.get()}"
+    modImplementation "maven.modrinth:xaeros-minimap:23.4.4_Fabric_${libs.versions.minecraft.get()}"
 
 	// OWO Lib
 	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
