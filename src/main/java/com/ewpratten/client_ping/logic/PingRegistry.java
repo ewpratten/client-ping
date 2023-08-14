@@ -37,16 +37,23 @@ public class PingRegistry {
 		for (Ping p : this.pings) {
 
 			// If the user already has a ping, remove the old one
-			if (p.owner().equals(ping.owner())) {
-				Globals.LOGGER.debug("Removing old ping from " + p.owner());
+			if (p.getOwner().equals(ping.getOwner())) {
+				// If the other user is spamming too fast, we can just drop the ping
+				if (now - p.getTimestamp() < Globals.getMinPingInterval()) {
+					Globals.LOGGER.debug("Ignoring new ping from " + p.getOwner() + " (too fast)");
+					return;
+				}
+
+				// Remove the old ping
+				Globals.LOGGER.debug("Removing old ping from " + p.getOwner());
 				markedForRemoval.add(p);
 			}
 
 			// Instead of running a separate prune job, we can just ignore old pings in
 			// other parts of the codebase, and quickly drop everything passed the max
 			// lifetime here
-			if (now - p.timestamp() > Globals.getMaxPingLifetime()) {
-				Globals.LOGGER.debug("Removing old ping from " + p.owner());
+			if (now - p.getTimestamp() > Globals.getMaxPingLifetime()) {
+				Globals.LOGGER.debug("Removing old ping from " + p.getOwner());
 				markedForRemoval.add(p);
 			}
 		}
@@ -70,9 +77,9 @@ public class PingRegistry {
 		long now = System.currentTimeMillis();
 		return this.pings.stream()
 				// Only get recent pings
-				.filter(p -> now - p.timestamp() < Globals.getMaxPingLifetime())
+				.filter(p -> now - p.getTimestamp() < Globals.getMaxPingLifetime())
 				// Only get pings in the correct dimension
-				.filter(p -> p.position().dimension().equals(dimension))
+				.filter(p -> p.getDimension().equals(dimension))
 				// Transform the stream into an arraylist
 				.collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 	}

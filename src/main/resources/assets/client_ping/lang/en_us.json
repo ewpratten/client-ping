@@ -3,5 +3,7 @@
   "category.client_ping.main": "Client Ping",
   "text.config.client_ping.title": "Client Ping Configuration",
   "text.config.client_ping.option.pingDisplayTime": "Ping display time (in seconds)",
-  "text.config.client_ping.option.showPingsInChat": "Show pings in chat"
+  "text.config.client_ping.option.minPingInterval": "Minimum allowed interval between pings (in seconds)",
+  "text.config.client_ping.option.showPingsInChat": "Show pings in chat",
+  "text.config.client_ping.option.onlyAcceptPartyPings": "Only accept pings from your party"
 }

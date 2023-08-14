@@ -58,20 +58,19 @@ public class XaeroBridge {
 		}
 
 		// Remove all waypoints that are missing a corresponding ping
-		waypoints.getList().removeIf(waypoint -> (waypoint instanceof PingWaypoint)
-				&& !activePings.contains(((PingWaypoint) waypoint).inner));
+		waypoints.getList().removeIf(waypoint -> (waypoint instanceof Ping)
+				&& !activePings.contains(((Ping) waypoint)));
 
 		// Add all pings that are missing a corresponding waypoint
 		for (Ping ping : activePings) {
 			// If the waypoint already exists, skip it
-			if (waypoints.getList().stream().anyMatch(waypoint -> (waypoint instanceof PingWaypoint)
-					&& ((PingWaypoint) waypoint).inner.equals(ping))) {
+			if (waypoints.getList().stream().anyMatch(waypoint -> (waypoint instanceof Ping)
+					&& ((Ping) waypoint).equals(ping))) {
 				continue;
 			}
 
 			// Add the waypoint
-			PingWaypoint pw = new PingWaypoint(ping);
-			waypoints.getList().add(pw);
+			waypoints.getList().add(ping);
 		}
 
 	}
