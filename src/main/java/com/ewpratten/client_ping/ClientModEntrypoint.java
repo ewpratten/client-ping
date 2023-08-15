@@ -7,17 +7,23 @@ import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.chat.api.QuiltChatEvents;
 import org.quiltmc.qsl.chat.api.QuiltMessageType;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.networking.api.S2CPlayChannelEvents;
 
 import com.ewpratten.client_ping.handlers.CreatePingHandler;
 import com.ewpratten.client_ping.handlers.InboundChatHandler;
 import com.ewpratten.client_ping.logic.XaeroBridge;
 import com.ewpratten.client_ping.util.TickBasedScheduledTask;
 
+import net.minecraft.network.listener.ClientPlayPacketListener;
+
 public class ClientModEntrypoint implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		Globals.LOGGER.info("Running client-side initialization");
+
+		// Create the user's party
+
 
 		// Hook in to various parts of the game
 		Globals.LOGGER.info("Registering event handlers");

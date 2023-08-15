@@ -32,6 +32,9 @@ repositories {
 
 // All the dependencies are declared at gradle/libs.version.toml and referenced with "libs.<id>"
 // See https://docs.gradle.org/current/userguide/platforms.html for information on how version catalogs work.
+configurations {
+	externalJavadoc
+}
 dependencies {
 	// JUint
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
@@ -40,10 +43,13 @@ dependencies {
 	// Minecraft
 	minecraft libs.minecraft
 	mappings variantOf(libs.quilt.mappings) { classifier 'intermediary-v2' }
+	externalJavadoc (variantOf(libs.quilt.mappings) { classifier 'javadoc' }) { transitive = false }
 	modImplementation libs.quilt.loader
 
 	// QSL / Fabric compat API
 	modImplementation libs.quilted.fabric.api
+	externalJavadoc (variantOf(libs.quilt.standard.library) { classifier 'fat-javadoc' }) { transitive = false }
+	externalJavadoc (variantOf(libs.quilted.fabric.api) { classifier 'fatjavadoc' }) { transitive = false }
 
 	// ModMenu support at runtime
 	modRuntimeOnly "com.terraformersmc:modmenu:7.0.1"
@@ -59,6 +65,14 @@ dependencies {
 	// Lombok
 	compileOnly 'org.projectlombok:lombok:1.18.28'
 	annotationProcessor 'org.projectlombok:lombok:1.18.28'
+
+	// GSON
+	implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+task downloadJavadocs(type: Copy) {
+	from configurations.externalJavadoc
+	into 'build/external/javadoc-jars'
 }
 
 processResources {
