@@ -1,10 +1,12 @@
-package com.ewpratten.client_ping.logic;
+package com.ewpratten.client_ping.util;
 
 import java.util.ArrayList;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.ewpratten.client_ping.Globals;
+import com.ewpratten.client_ping.logic.Ping;
+import com.ewpratten.client_ping.logic.PingRegistry;
 
 import xaero.common.XaeroMinimapSession;
 import xaero.common.minimap.waypoints.WaypointSet;

@@ -3,6 +3,7 @@ package com.ewpratten.client_ping.logic;
 import java.util.ArrayList;
 
 import com.ewpratten.client_ping.Globals;
+import com.ewpratten.client_ping.util.XaeroBridge;
 
 import net.minecraft.client.MinecraftClient;
 

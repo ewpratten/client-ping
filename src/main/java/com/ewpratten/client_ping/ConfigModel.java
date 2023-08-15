@@ -14,7 +14,7 @@ public class ConfigModel {
 	public int minPingInterval = 1;
 
 	// Show ping messages in chat
-	public boolean showPingsInChat = true;
+	public boolean showPingsInChat = false;
 
 	// Only accept incoming pings from party
 	public boolean onlyAcceptPartyPings = false;

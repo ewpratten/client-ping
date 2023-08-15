@@ -5,9 +5,10 @@ import org.quiltmc.qsl.chat.api.types.AbstractChatMessage;
 import org.quiltmc.qsl.chat.api.types.ChatS2CMessage;
 
 import com.ewpratten.client_ping.Globals;
+import com.ewpratten.client_ping.communication.Party;
+import com.ewpratten.client_ping.communication.PartyManager;
 import com.ewpratten.client_ping.logic.Ping;
 import com.ewpratten.client_ping.logic.PingRegistry;
-import com.ewpratten.client_ping.util.PingSerializer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,13 +37,26 @@ public class InboundChatHandler implements Cancel, AutoCloseable {
 			String content = message.getBody().content();
 			Globals.LOGGER.debug("Inbound message: " + content);
 
+			// If the user only wants to accept pings from their party, filter the sender
+			if (Globals.CONFIG.onlyAcceptPartyPings()) {
+				Party currentParty = PartyManager.getInstance().getCurrentParty();
+				if (!currentParty.isMember(sender.getUuid())) {
+					Globals.LOGGER.info("Got ping from " + sender.getName() + " but they are not in the user's party");
+					Globals.LOGGER.warn("Dropping unwanted ping silently");
+					return !Globals.CONFIG.showPingsInChat();
+				}
+			}
+
 			// If we can deserialize the message, put it in the registry
-			Ping ping = PingSerializer.deserialize(content);
+			Ping ping = Ping.deserialize(content);
 			if (ping != null) {
 				Globals.LOGGER.info("Got ping: " + ping);
 
 				// Send the ping to the registry
 				PingRegistry.getInstance().register(ping);
+
+				// Handle weather or not to drop the message from the UI
+				return !Globals.CONFIG.showPingsInChat();
 			}
 		}
 
