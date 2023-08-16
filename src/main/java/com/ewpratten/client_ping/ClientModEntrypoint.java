@@ -6,9 +6,11 @@ import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.chat.api.QuiltChatEvents;
 import org.quiltmc.qsl.chat.api.QuiltMessageType;
+import org.quiltmc.qsl.command.api.client.ClientCommandRegistrationCallback;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
 import org.quiltmc.qsl.networking.api.client.ClientPlayConnectionEvents;
 
+import com.ewpratten.client_ping.handlers.ClientSideCommandRegistrationCallback;
 import com.ewpratten.client_ping.handlers.CreatePingHandler;
 import com.ewpratten.client_ping.handlers.InboundChatHandler;
 import com.ewpratten.client_ping.handlers.PlayerDisconnectHandler;
@@ -26,6 +28,7 @@ public class ClientModEntrypoint implements ClientModInitializer {
 		ClientTickEvents.END.register(new CreatePingHandler());
 		QuiltChatEvents.CANCEL.register(EnumSet.of(QuiltMessageType.CHAT), new InboundChatHandler());
 		ClientPlayConnectionEvents.DISCONNECT.register(new PlayerDisconnectHandler());
+		ClientCommandRegistrationCallback.EVENT.register(new ClientSideCommandRegistrationCallback());
 
 		// Occasionally re-sync between the ping registry and Xaero's Minimap
 		new TickBasedScheduledTask(() -> {
