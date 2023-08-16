@@ -1,13 +1,10 @@
 package com.ewpratten.client_ping.logic;
 
-import java.util.Base64;
-import java.util.regex.Pattern;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.ewpratten.client_ping.Globals;
-import com.ewpratten.client_ping.communication.Party;
-import com.google.gson.Gson;
+import com.ewpratten.client_ping.proto.SerializablePing;
+import com.github.fzakaria.ascii85.Ascii85;
 
 import net.minecraft.util.math.Vec3i;
 import xaero.common.minimap.waypoints.Waypoint;
@@ -30,6 +27,14 @@ public class Ping extends Waypoint {
 	// Preamble used to identify serialized pings
 	private static final String PREAMBLE = "CLP:";
 
+	public Ping(String owner, SerializablePing sp) {
+		this(owner, sp, System.currentTimeMillis());
+	}
+
+	public Ping(String owner, SerializablePing sp, long timestamp) {
+		this(owner, sp.getDimension(), new Vec3i(sp.getX(), sp.getY(), sp.getZ()), timestamp);
+	}
+
 	public Ping(String owner, String dimension, Vec3i position, long timestamp) {
 		// Pass data to super class
 		super(
@@ -51,10 +56,6 @@ public class Ping extends Waypoint {
 		this.timestamp = timestamp;
 	}
 
-	public Ping cloneWithNewTimestamp(long timestamp) {
-		return new Ping(this.owner, this.dimension, this.position, timestamp);
-	}
-
 	@Override
 	public String toString() {
 		return String.format("Ping[owner=%s, dimension=%s, position=%s, timestamp=%d]", this.owner,
@@ -62,41 +63,44 @@ public class Ping extends Waypoint {
 	}
 
 	public String serialize() {
+		// Stuff the data into a protobuf message
+		SerializablePing sp = SerializablePing.newBuilder()
+				.setDimension(this.dimension)
+				.setX(this.position.getX())
+				.setY(this.position.getY())
+				.setZ(this.position.getZ())
+				.build();
 
-		// Serialize and encode the object
-		Gson gson = new Gson();
-		String json = gson.toJson(this);
-		String encoded = Base64.getEncoder().encodeToString(json.getBytes());
+		// Base64 encode the message
+		String encoded = Ascii85.encode(sp.toByteArray());
 
 		// Build the output string
 		return String.format("%s%s", PREAMBLE, encoded);
 	}
 
-	public static @Nullable Ping deserialize(String s) {
-		// If the string doesn't start with the preamble, return null
-		if (!s.startsWith(PREAMBLE)) {
+	public static @Nullable Ping deserialize(String owner, String serialized) {
+		// If the serialized string does not start with the preamble, it is not a ping
+		if (!serialized.startsWith(PREAMBLE)) {
 			return null;
 		}
 
-		// Strip the preamble
-		String stripped = s.substring(PREAMBLE.length());
+		// Remove the preamble from the serialized string
+		String encoded = serialized.substring(PREAMBLE.length());
 
-		// Base64 decode
-		byte[] decoded = Base64.getDecoder().decode(stripped);
-		String json = new String(decoded);
+		// Decode the serialized string
+		byte[] decoded = Ascii85.decode(encoded);
 
-		// Attempt to deserialize the payload
-		Gson gson = new Gson();
-		Ping ping = gson.fromJson(json, Ping.class);
-
-		// If the ping is null, return null
-		if (ping == null) {
+		// Parse the protobuf message
+		SerializablePing sp;
+		try {
+			sp = SerializablePing.parseFrom(decoded);
+		} catch (Exception e) {
+			Globals.LOGGER.error("Failed to parse protobuf message", e);
 			return null;
 		}
 
-		// Otherwise, we will override the timestamp to now
-		// This prevents another user from spamming by crafting bad timestamps
-		return ping.cloneWithNewTimestamp(System.currentTimeMillis());
+		// Create a new ping object
+		return new Ping(owner, sp);
 	}
 
 }

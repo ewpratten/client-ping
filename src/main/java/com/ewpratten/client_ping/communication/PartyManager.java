@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import com.ewpratten.client_ping.Globals;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
 public class PartyManager {
 
@@ -87,19 +88,21 @@ public class PartyManager {
 	}
 
 	private String getCurrentServerIdentifier() {
-		if (mc.isInSingleplayer()) {
+		if (this.mc.isInSingleplayer()) {
 			// Use the current save name
-			return mc.getServer().getSaveProperties().getWorldName();
+			return this.mc.getServer().getSaveProperties().getWorldName();
 
 		} else {
 			// Use the server address + port
-			return mc.getServer().getServerIp() + ":" + mc.getServer().getServerPort();
+			ClientPlayNetworkHandler netHandler = this.mc.getNetworkHandler();
+			return netHandler.getServerInfo().address;
 		}
 	}
 
 	private File getPartyConfigLocation(String serverId) {
 		String b64Encoded = Base64.getEncoder().encodeToString(serverId.getBytes());
-		return this.mc.runDirectory.toPath().resolve("config").resolve("client_ping").resolve(b64Encoded + ".json")
+		return this.mc.runDirectory.toPath().resolve("config").resolve("client_ping").resolve("parties")
+				.resolve(b64Encoded + ".json")
 				.toFile();
 	}
 

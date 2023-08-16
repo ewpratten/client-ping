@@ -48,7 +48,7 @@ public class InboundChatHandler implements Cancel, AutoCloseable {
 			}
 
 			// If we can deserialize the message, put it in the registry
-			Ping ping = Ping.deserialize(content);
+			Ping ping = Ping.deserialize(sender.getName().getString(), content);
 			if (ping != null) {
 				Globals.LOGGER.info("Got ping: " + ping);
 

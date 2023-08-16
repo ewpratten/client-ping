@@ -1,6 +1,7 @@
 plugins {
 	id 'maven-publish'
 	alias libs.plugins.quilt.loom
+  	id "com.google.protobuf" version "0.9.4"
 }
 
 archivesBaseName = project.archives_base_name
@@ -71,6 +72,12 @@ dependencies {
 
 	// Commons-io
 	implementation 'commons-io:commons-io:2.13.0'
+
+	// Protobuf
+  	implementation 'com.google.protobuf:protobuf-java:3.6.1'
+
+	// Ascii85 support
+	implementation 'com.github.fzakaria:ascii85:1.2'
 }
 
 task downloadJavadocs(type: Copy) {
@@ -132,4 +139,10 @@ publishing {
 
 test {
     useJUnitPlatform()
+}
+
+protobuf {
+	protoc {
+		artifact = 'com.google.protobuf:protoc:3.6.1'
+	}
 }

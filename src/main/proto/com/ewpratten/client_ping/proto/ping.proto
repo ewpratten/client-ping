@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.ewpratten.client_ping.proto";
+option java_outer_classname = "PingProto";
+option java_multiple_files = true;
+
+// A SerializablePing is the bare minimum amount of information needed to inform
+// another client of a ping. The other side is expected to rebuild the rest of
+// the object using data it already has.
+message SerializablePing {
+  // The name of the dimension this ping was created in
+  string dimension = 1;
+  // The X,Y,Z coordinates of the ping
+  int32 x = 2;
+  int32 y = 3;
+  int32 z = 4;
+}
